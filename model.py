@@ -23,6 +23,7 @@ def plot_histogram(data, n_bins):
     width = 0.7 * (bins[1] - bins[0])
     center = (bins[:-1] + bins[1:]) / 2
     plt.bar(center, histogram, align='center', width=width)
+    plt.savefig('report/histogram.png')
 
 # limits the elements per bin by counting values histogram values
 # the functions returns True, if there are already max elements in a bin
@@ -122,6 +123,7 @@ y_train = np.array(measurements)
 
 # show distribution of steering angles
 plot_histogram(y_train, n_histogram_bins)
+#figure1 = plt.figure()
 #plt.show()
 
 # show original distribution of steering angles
