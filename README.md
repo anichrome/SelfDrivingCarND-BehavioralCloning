@@ -98,9 +98,8 @@ All these experiments have in common that the models overfits with a small subse
 
 The first stage in my model includes preprocessing of data:
 
-* Preprocessing
- * Image cropping to focus on the road.
- * Image normalization using per_image_standardization
+* Image cropping to focus on the road.
+* Image normalization using per_image_standardization
  
 
 The model I trained has the following layers:
