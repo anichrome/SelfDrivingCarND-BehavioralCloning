@@ -75,7 +75,7 @@ I have found the best correction value by experiment. I chose the correction val
 
 #### Recording
 
-The training data I recorded can be found in the folder 'my_training_data'. I drove the simulated car several times on track one in forward direction and in reverse direction. Additionally, I recorded only curves and several "rescue" situations to bring the car back to the track. I had to make several runs to get the best data. In the first run, I observed that my training data lacked the "rescue" images and drove constantly to the sides. I then collected more data with these cases and re-run my model.
+I drove the simulated car several times on track one in forward direction and in reverse direction. Additionally, I recorded only curves and several "rescue" situations to bring the car back to the track. I had to make several runs to get the best data. In the first run, I observed that my training data lacked the "rescue" images and drove constantly to the sides. I then collected more data with these cases and re-run my model.
 
 **I collected in total 26382 training images**, consisting of left, center and right camera images.
 
@@ -133,7 +133,7 @@ I used the following network parameters to train the model.
 
 ### Result Video
 
-This is an excerpt of the autonomous driving on track one. The resuting images are stored in the folder run2 and the video file is named video.mp4
+This is an excerpt of the autonomous driving on track one. The resuting video file is named video.mp4
 
 ![Autonomous Driving][video_autonomous_driving]
 
