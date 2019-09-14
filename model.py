@@ -38,13 +38,6 @@ def add_to_historgram(value, max, histogram, bounds):
                 return False
     return False
 
-
-# convert image to yuv, with tensorflow
-def rgb_image_to_yuv_conversion(x):
-    umat_image = cv2.imread(x)
-    img_yuv = cv2.cvtColor(umat_image, cv2.COLOR_RGB2YUV)
-    return img_yuv
-
 # image normalization
 def per_image_standardization(x):
     import tensorflow as tf
@@ -83,7 +76,6 @@ for idx, line in lines.iterrows():
         # no need to change path name as recording and training is done on the same machine
         filename = source_path.split('/')[-1]
         current_path = recording_path + '/IMG/' + filename
-        # current_path = source_path
 
         # get steering measurement
         steering = steering_measurement
@@ -115,7 +107,7 @@ for idx, line in lines.iterrows():
 
 X_train = np.array(images)
 y_train = np.array(measurements)
-
+print ("length of X ", len(X_train)) 
 
 #
 # histogram of label frequency
@@ -123,15 +115,11 @@ y_train = np.array(measurements)
 
 # show distribution of steering angles
 plot_histogram(y_train, n_histogram_bins)
-#figure1 = plt.figure()
-#plt.show()
+plt.savefig('report/histogram_label_frequency.png')
 
 # show original distribution of steering angles
 plot_histogram(lines['steering'], n_histogram_bins)
-#plt.show()
-'''
-'''
-
+plt.savefig('report/distribution_of_steering_angles.png')
 
 input_shape= X_train.shape[1:]
 print("Training elements:" + str(len(X_train)))
@@ -152,9 +140,6 @@ model.add(Cropping2D(cropping=((70,25),(0,0)), input_shape=input_shape))
 # normalize data and mean centering
 # model.add(Lambda(lambda  x: x / 255.0 - 0.5))
 model.add(Lambda(per_image_standardization))
-
-# image conversion to yuv
-#model.add(Lambda(rgb_image_to_yuv_conversion))
 
 # use model from nvidia
 # https://devblogs.nvidia.com/deep-learning-self-driving-cars/
@@ -177,29 +162,11 @@ model.add(Dense(1))
 # mse = mean squared error
 model.compile(loss='mse', optimizer='adam')
 
-'''
-# This was code to augment images. I decided to create more real training 
-# data and dropped augumentation. This code remains for documenting purposes. 
-# 
-# augument images
-# 
-datagen = ImageDataGenerator(
-    rotation_range=5,
-    width_shift_range=0.2,
-    height_shift_range=0.2)
-
-X_train, X_valid, y_train, y_valid = train_test_split(X_train, y_train, test_size=0.2)
-
-datagen.fit(X_train)
-
-#history_object = model.fit_generator(datagen.flow(X_train.astype('float32'), y_train, batch_size=batch_size), samples_per_epoch=len(X_train), nb_epoch=nb_epoch, validation_data=(X_valid, y_valid), verbose=1)
-'''
-
 # model fit
 history_object = model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.2, shuffle=True, nb_epoch=nb_epoch, verbose=1)
 
 # model save
-model.save("nvidia_network_02.h5")
+model.save("model.h5")
 
 # show loss
 ### print the keys contained in the history object
@@ -212,4 +179,5 @@ plt.title('model mean squared error loss')
 plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
+plt.savefig('report/training_and_validation_loss.png')
 #plt.show()
