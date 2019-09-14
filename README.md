@@ -75,14 +75,14 @@ I have found the best correction value by experiment. I chose the correction val
 
 #### Recording
 
-I drove the simulated car several times on track one in forward direction and in reverse direction. Additionally, I recorded only curves and several "rescue" situations to bring the car back to the track. I had to make several runs to get the best data. In the first run, I observed that my training data lacked the "rescue" images and drove constantly to the sides. I then collected more data with these cases and re-run my model.
+The training data I recorded can be found in the folder 'my_training_data'. I drove the simulated car several times on track one in forward direction and in reverse direction. Additionally, I recorded only curves and several "rescue" situations to bring the car back to the track. I had to make several runs to get the best data. In the first run, I observed that my training data lacked the "rescue" images and drove constantly to the sides. I then collected more data with these cases and re-run my model.
 
-**I collected in total 26382 training images**,consisting of left, center and right camera images.
+**I collected in total 26382 training images**, consisting of left, center and right camera images.
 
 
 #### Image augmentation
 
-I assumed that flipping images would be a useful way increase the amount of training examples. I have tested this with a simple model. The validation lost decreased a bit, especially in the first epochs. Further, it helped to have an even distribution of left and right turns. This further increased the amount of training images. Here are the examples of flipped images.
+I assumed that flipping images would be a useful way to increase the amount of training examples. I have tested this with a simple model. The validation loss decreased a bit, especially in the first few epochs. Further, it helped to have an even distribution of left and right turns. This further increased the amount of training images. Here are the examples of flipped images.
 
 ![Left Camera Image Flipped][left_image_flipped] ![Center Camera Image Flipped][center_image_flipped] ![Right Camera Image Flipped][right_image_flipped]
 
@@ -122,6 +122,14 @@ The model I trained has the following layers:
 
 ![Nvidial Nework Architecture][image_nvidia_model]
 
+#### Network Parameters
+
+I used the following network parameters to train the model.
+
+* Numer of epochs : 10
+* Batch Size : 10
+* Validation Split : 0.2
+* Verbose : 1
 
 ### Result Video
 
