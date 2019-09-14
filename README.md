@@ -18,10 +18,11 @@ The goals / steps of this project are the following:
 [center_image]: ./report/center_camera.jpg "Center Training Image"
 [left_image]: ./report/left_camera.jpg "Left Training Image"
 [right_image]: ./report/right_camera.jpg "Right Training Image"
-[center_image_cropped]: ./report/center_image_cropped.jpg "Cropped Center Training Image"
+[center_image_cropped]: ./report/center_camera_cropped.jpg "Cropped Center Training Image"
 [center_image_flipped]: ./report/center_camera_flipped.jpg "Flipped Center Training Image"
 [left_image_flipped]: ./report/left_camera_flipped.jpg "Flipped Left Training Image"
 [right_image_flipped]: ./report/right_camera_flipped.jpg "Flipped Right Training Image"
+[video_autonomous_driving]: ./report/video.gif "Autonomous Driving"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
