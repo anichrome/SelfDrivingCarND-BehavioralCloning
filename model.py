@@ -4,39 +4,17 @@ import random
 import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
-
+from contextlib import redirect_stdout
 # network includes
 from keras.models import Sequential
 from keras.layers.core import Dense, Activation, Flatten, Dropout, Lambda
 from keras.layers import Cropping2D
 from keras.layers.convolutional import Conv2D
 from keras.layers.pooling import MaxPooling2D
-#from keras.preprocessing.image import ImageDataGenerator
 
 # path to the recording of the simulator
-#recording_path = '/opt/carnd_p3/data'
+#recording_path = '/opt/my_training_data'
 recording_path = '/home/workspace/CarND-Behavioral-Cloning-P3/my_training_data'
-
-# plot histogram
-def plot_histogram(data, n_bins):
-    histogram, bins = np.histogram(data, bins=n_bins)
-    width = 0.7 * (bins[1] - bins[0])
-    center = (bins[:-1] + bins[1:]) / 2
-    plt.bar(center, histogram, align='center', width=width)
-    plt.savefig('report/histogram.png')
-
-# limits the elements per bin by counting values histogram values
-# the functions returns True, if there are already max elements in a bin
-# otherwise False
-def add_to_historgram(value, max, histogram, bounds):
-    for i in range(len(bounds) - 1):
-        if (value >= bounds[i] and value <= bounds[i+1]):
-            if histogram[i] > max:
-                return True
-            else:
-                histogram[i] += 1
-                return False
-    return False
 
 # image normalization
 def per_image_standardization(x):
@@ -47,7 +25,6 @@ def per_image_standardization(x):
 # load csv
 column_names = ['center', 'left', 'right',
                 'steering', 'throttle', 'brake', 'speed']
-#lines = pd.read_csv(recording_path + '/driving_log.csv', names=column_names, nrows=200)
 lines = pd.read_csv(recording_path + '/driving_log.csv', names=column_names)
 
 # shuffle
@@ -88,12 +65,6 @@ for idx, line in lines.iterrows():
         if image_idx == 2:
             steering = steering_measurement - correction
 
-        # allow only a maxium amount of images for steering angle bins
-        # this lowers the excessive amount training data with straight steering angles
-        # as we shuffled the data before, we may just reject
-        if add_to_historgram(steering, 3000, histogram, bin_bounds) == True:
-            continue
-
         measurements.append(steering)
 
         # load the image
@@ -102,29 +73,16 @@ for idx, line in lines.iterrows():
         images.append(image)
 
         # add additional flipped images
-        images.append(np.fliplr(image))
+        flippedImage = np.fliplr(image)
+        images.append(flippedImage)
         measurements.append(- steering)
 
 X_train = np.array(images)
 y_train = np.array(measurements)
-print ("length of X ", len(X_train)) 
 
-#
-# histogram of label frequency
-#
-
-# show distribution of steering angles
-plot_histogram(y_train, n_histogram_bins)
-plt.savefig('report/histogram_label_frequency.png')
-
-# show original distribution of steering angles
-plot_histogram(lines['steering'], n_histogram_bins)
-plt.savefig('report/distribution_of_steering_angles.png')
 
 input_shape= X_train.shape[1:]
-print("Training elements:" + str(len(X_train)))
-print("Input shape:" + str(input_shape))
-nb_epoch = 10
+nb_epoch = 20
 batch_size = 10
 
 
@@ -154,8 +112,13 @@ model.add(Conv2D(64, 3, 3, border_mode='valid', activation="elu"))
 
 # Fully connected layer
 model.add(Flatten())
+
 model.add(Dense(100))
+model.add(Dropout(0.2))
+
 model.add(Dense(50))
+model.add(Dropout(0.2))
+
 model.add(Dense(10))
 model.add(Dense(1))
 
@@ -165,19 +128,22 @@ model.compile(loss='mse', optimizer='adam')
 # model fit
 history_object = model.fit(X_train, y_train, batch_size=batch_size, validation_split=0.2, shuffle=True, nb_epoch=nb_epoch, verbose=1)
 
+with open('modelsummary.txt', 'w') as f:
+    with redirect_stdout(f):
+        model.summary()
+        
+print(model.summary())
 # model save
-model.save("model.h5")
+model.save("model_with_dropout_3.h5")
 
-# show loss
-### print the keys contained in the history object
 print(history_object.history.keys())
 
 ### plot the training and validation loss for each epoch
+plt.figure()
 plt.plot(history_object.history['loss'])
 plt.plot(history_object.history['val_loss'])
 plt.title('model mean squared error loss')
 plt.ylabel('mean squared error loss')
 plt.xlabel('epoch')
 plt.legend(['training set', 'validation set'], loc='upper right')
-plt.savefig('report/training_and_validation_loss.png')
-#plt.show()
+plt.savefig('loss.png')
