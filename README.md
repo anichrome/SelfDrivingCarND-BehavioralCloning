@@ -22,7 +22,8 @@ The goals / steps of this project are the following:
 [center_image_flipped]: ./report/center_camera_flipped.jpg "Flipped Center Training Image"
 [left_image_flipped]: ./report/left_camera_flipped.jpg "Flipped Left Training Image"
 [right_image_flipped]: ./report/right_camera_flipped.jpg "Flipped Right Training Image"
-[video_autonomous_driving]: ./report/video.gif "Autonomous Driving"
+[video_autonomous_driving]: ./report/video2.gif "Autonomous Driving"
+[loss_image]: ./report/loss.png "Loss"
 
 ## Rubric Points
 ### Here I will consider the [rubric points](https://review.udacity.com/#!/rubrics/432/view) individually and describe how I addressed each point in my implementation.
@@ -88,11 +89,13 @@ I assumed that flipping images would be a useful way to increase the amount of t
 
 #### My Model
 
-I used the model from NVIDIA in this work. Before using the one from NVIDIA, I tried with a light weight model consisting of only a few layers. But, instantly I observed that such a model does not perform well the data I generated. Since, the amount of data which I could generate was too small, the small network's performance was poor.
+I used the model from NVIDIA and adapted it to reduce overfitting in this work. Before using the one from NVIDIA, I tried with a light weight model consisting of only a few layers. But, instantly I observed that such a model does not perform well the data I generated. Since, the amount of data which I could generate was too small, the small network's performance was poor.
 
 The results from [Convolutional Neuronal Network (CNN) Architecture](https://devblogs.nvidia.com/deep-learning-self-driving-cars/) from NVIDIA looked promising. I used the model with the same training data and this time, the car drove much better in autonomous mode simulation.
 
-All these experiments have in common that the models overfits with a small subset of image data. Giving more training data helped to reduce overfitting. 
+All these experiments have in common that the models overfits with a small subset of image data. 
+
+I then added dropout layers after the fully connected layers which helped in generalizing the problem and thereby reduce overfitting. 
 
 #### Final Model
 
@@ -101,6 +104,9 @@ The first stage in my model includes preprocessing of data:
 * Image cropping to focus on the road.
 * Image normalization using per_image_standardization
  
+The basic model from NVIDIA is as shown:
+
+![Nvidial Nework Architecture][image_nvidia_model]
 
 The model I trained has the following layers:
 
@@ -116,20 +122,64 @@ The model I trained has the following layers:
  * Fully Connected Network
    * Flatten
    * Layer 100 Nodes
+   * Dropout Layer
    * Layer 50 Nodes
+   * Dropout Layer
    * Layer 10 Nodes
    * Layer 1 Nodes
 
-![Nvidial Nework Architecture][image_nvidia_model]
+To get a better overview of the trained network, I saved the model.summary from the network which is as shown below.
+
+Layer (type)                 Output Shape              Param #   
+=================================================================
+cropping2d_1 (Cropping2D)    (None, 65, 320, 3)        0         
+_________________________________________________________________
+lambda_1 (Lambda)            (None, 65, 320, 3)        0         
+_________________________________________________________________
+conv2d_1 (Conv2D)            (None, 31, 158, 24)       1824      
+_________________________________________________________________
+conv2d_2 (Conv2D)            (None, 14, 77, 36)        21636     
+_________________________________________________________________
+conv2d_3 (Conv2D)            (None, 5, 37, 48)         43248     
+_________________________________________________________________
+conv2d_4 (Conv2D)            (None, 3, 35, 64)         27712     
+_________________________________________________________________
+conv2d_5 (Conv2D)            (None, 1, 33, 64)         36928     
+_________________________________________________________________
+flatten_1 (Flatten)          (None, 2112)              0         
+_________________________________________________________________
+dense_1 (Dense)              (None, 100)               211300    
+_________________________________________________________________
+dropout_1 (Dropout)          (None, 100)               0         
+_________________________________________________________________
+dense_2 (Dense)              (None, 50)                5050      
+_________________________________________________________________
+dropout_2 (Dropout)          (None, 50)                0         
+_________________________________________________________________
+dense_3 (Dense)              (None, 10)                510       
+_________________________________________________________________
+dense_4 (Dense)              (None, 1)                 11        
+=================================================================
+Total params: 348,219
+Trainable params: 348,219
+Non-trainable params: 0
+_________________________________________________________________
+
+
 
 #### Network Parameters
 
-I used the following network parameters to train the model.
+While chosing the network parameters, I used the first guess with respect to the number of epochs. I chose a value of 10 in the beginning and plotted the network loss and validation loss against the number of epochs. I observed that although, after 10 epochs, the network loss decreased, but it still did not reach a saturated state. The validation loss had peaks in between. I tried with an increased batch size but the result was not better.
 
-* Numer of epochs : 10
+Then, I decided to increase the epochs to 20 and see if the losses converged. The network loss looked better this time with about to converge and the validation loss was varying. This could be due to the fact that I introduced dropout layers and shuffled the validation dataset before evaluation. Nonetheless, I could see that the car could drive smoothly in the simulator. The final network parameters I chose to train the model are mentioned below.
+
+* Numer of epochs : 20
 * Batch Size : 10
 * Validation Split : 0.2
 * Verbose : 1
+
+The plot of network loss and validation loss against the number of epochs is as shown below.
+![loss][loss_image]
 
 ### Result Video
 
